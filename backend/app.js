@@ -4,12 +4,28 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-
+const cors = require("cors");
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var habitsRouter = require('./routes/habits');
 
 var app = express();
+app.use(cors());
+
+// Enable CORS for all routes
+app.use(cors({
+  origin: 'http://localhost:3000', // Allow requests from this origin
+  credentials: true, // Allow cookies and credentials
+}));
+
+// Your routes
+app.get('/habitos', (req, res) => {
+  res.json({ message: 'This route is CORS-enabled!' });
+});
+
+app.listen(3001, () => {
+  console.log('Server running on http://localhost:3001');
+});
 
 
 //Trying to add this code in app
