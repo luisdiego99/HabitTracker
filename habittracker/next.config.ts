@@ -5,3 +5,14 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+module.exports = {
+  async rewrites() {
+    return [
+      {
+        source: '/api/habits',
+        destination: 'http://localhost:3002/habits',
+      },
+    ];
+  },
+};

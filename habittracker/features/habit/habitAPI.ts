@@ -1,6 +1,7 @@
 export const fetchHabits = async () => {
     try {
-      const response = await fetch('http://localhost:3001/allHabits');
+      const response = await fetch('http://localhost:3002/habits');
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
