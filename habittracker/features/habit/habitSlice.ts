@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { fetchHabits } from "./habitAPI";
+
 type Habit = {
     id:string;
     title: string;
@@ -18,7 +19,7 @@ export const fetchHabitsThunk = createAsyncThunk("habit/fetchHabits", async() =>
     return await fetchHabits();
 });
 const habitSlice = createSlice({
-    name: "habit",
+    name: "habits",
     initialState,
     reducers: {
         addHabits: (state, action) => {

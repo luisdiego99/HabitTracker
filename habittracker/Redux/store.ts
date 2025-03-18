@@ -4,7 +4,7 @@ import habitReducer from "../features/habit/habitSlice";
 export const makeStore = () => {
     return configureStore({
         reducer: {
-            habit: habitReducer
+            habits: habitReducer
         },
     });
 };
