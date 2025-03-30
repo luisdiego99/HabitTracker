@@ -4,6 +4,7 @@ const mongoose = require('mongoose'); // Import mongoose
 const Habit = require('../models/Habit'); // Import the Habit model
 const connectDB = require('../config/database'); // Import the connectDB function
 
+
 // Connect to MongoDB
 connectDB();
 
@@ -23,7 +24,7 @@ router.get('/habits', async (req, res, next) => {
 });
 
 // Test route
-router.get('/test', function (req, res, next) {
+router.get('/test',  (req, res) => {
   res.json({ message: 'Backend is working!' });
 });
 
@@ -52,8 +53,8 @@ router.delete('/habits/:id', async (req, res) => {
   }
 });
 
-module.exports = router;
 
+module.exports = router;
 // var express = require('express');
 // var router = express.Router();
 // const mongoose = require('mongoose'); // Import mongoose
