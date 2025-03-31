@@ -12,13 +12,17 @@ const habitSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     },
+    days:{
+        type:Number,
+        default: 1
+    },
     lastDone:{
         type: Date,
         default: Date.now
     },
-    days:{
-        type:Number,
-        default: 1
+    lastUpdate:{
+        type: Date,
+        default:Date.now
     },
     startedAt: {
         type: Date,

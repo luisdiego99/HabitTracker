@@ -7,19 +7,17 @@ var logger = require('morgan');
 const cors = require('cors');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const usersRouter = require('./routes/users');
 var habitsRouter = require('./routes/habits');
 
 
 
 var app = express();
-
 app.use(cors({
   origin: 'http://localhost:3000', // Allow requests from this origin
   credentials: true, // Allow cookies and credentials
 }));
 
-//Trying to add this code in app
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
@@ -37,7 +35,7 @@ app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -62,6 +60,18 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+console.log('Registered Routes:');
+app._router.stack.forEach((r) => {
+  if (r.route?.path) {
+    console.log(`${Object.keys(r.route.methods)[0]} ${r.route.path}`);
+  } else if (r.name === 'router') {
+    r.handle.stack.forEach((s) => {
+      if (s.route?.path) {
+        console.log(`${Object.keys(s.route.methods)[0]} ${r.regexp.source}${s.route.path}`);
+      }
+    });
+  }
+});
 module.exports = app;
 
 // // Load environment variables

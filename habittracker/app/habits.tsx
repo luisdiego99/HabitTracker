@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"; // Add this import
 import { useDispatch, useSelector } from "react-redux";
 import { markAsDoneThunk } from "@/features/habit/habitSlice";
 import { AppState, AppDispatch } from "../Redux/store";
@@ -17,6 +18,7 @@ type Habit = {
   type HabitProps = {
     habits: Habit[];
   };
+
   
 const handleMarkAsDone = (dispatch: AppDispatch, habitId: string) => {
   dispatch(markAsDoneThunk(habitId));
