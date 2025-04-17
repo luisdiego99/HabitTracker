@@ -1,8 +1,6 @@
 const express = require('express');
-const connectDB = require('../config/database');
 const router = express.Router();
 
-connectDB();
 
 // Landing page
 router.get('/', (req, res) => {
