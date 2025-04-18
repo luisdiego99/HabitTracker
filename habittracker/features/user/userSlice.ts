@@ -43,7 +43,7 @@ async ({ username, password }: userThunk, { rejectWithValue }) => {
     }
 
     if (responseJson.token) {
-        localStorage.setItem("token", responseJson.token); // 🔥 Aquí se guarda el token
+        localStorage.setItem("token", responseJson.token); 
         return { token: responseJson.token };
     } else {
         return rejectWithValue("Token no recibido");

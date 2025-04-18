@@ -12,6 +12,16 @@ interface Habit {
   startedAt: string;
 }
 
+type markHabitAsDoneParams = {
+    habitId: string,
+    token?: string
+}
+
+type createHabitThunkParams = {
+    token?: string,
+    title: string, 
+    description: string
+}
 // Estado inicial
 interface HabitState {
   habits: Habit[];
@@ -34,7 +44,7 @@ const getAuthHeaders = () => {
   };
 };
 
-// ✅ Thunks
+// Thunks
 
 export const fetchHabits = createAsyncThunk("habits/fetchHabits", async (_, thunkAPI) => {
   try {
@@ -49,11 +59,12 @@ export const fetchHabits = createAsyncThunk("habits/fetchHabits", async (_, thun
   }
 });
 
+
 export const createHabit = createAsyncThunk(
   "habits/createHabit",
-  async ({ title, description }: { title: string; description: string }, thunkAPI) => {
+  async ({title,description}:createHabitThunkParams, thunkAPI) => {
     try {
-      const res = await fetch("http://localhost:3002/habits", {
+      const res = await fetch(`http://localhost:3002/habits`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ title, description }),
@@ -79,9 +90,9 @@ export const deleteHabit = createAsyncThunk("habits/deleteHabit", async (id: str
   }
 });
 
-export const markHabitAsDone = createAsyncThunk("habits/markHabitAsDone", async (id: string, thunkAPI) => {
+export const markHabitAsDone = createAsyncThunk("habits/markHabitAsDone", async ({habitId} : markHabitAsDoneParams, thunkAPI) => {
   try {
-    const res = await fetch(`http://localhost:3002/habits/markasdone/${id}`, {
+    const res = await fetch(`http://localhost:3002/habits/markasdone/${habitId}`, {
       method: "PATCH",
       headers: getAuthHeaders(),
     });
@@ -92,8 +103,6 @@ export const markHabitAsDone = createAsyncThunk("habits/markHabitAsDone", async 
   }
 });
 
-
-// ✅ Slice
 
 const habitSlice = createSlice({
   name: "habits",
@@ -126,83 +135,38 @@ const habitSlice = createSlice({
       })
 
       // markHabitAsDone
-      .addCase(markHabitAsDone.fulfilled, (state, action: PayloadAction<{ days: number; message: string }>) => {
-        // Opcional: puedes actualizar estado local si lo necesitas
-        console.log(action.payload.message);
-      });
+
+        .addCase(markHabitAsDone.fulfilled, (state, action: PayloadAction<{ 
+            message: string; 
+            days: number;
+            _id: string;
+        }>) => {
+            state.status = "succeeded";
+            const updatedHabit = state.habits.find(h => h._id === action.payload._id);
+            if (updatedHabit) {
+            updatedHabit.days = action.payload.days;
+            updatedHabit.lastDone = new Date().toISOString();
+            }
+        })
+
+        // markHabitAsDone
+        .addCase(markHabitAsDone.pending, (state) => {
+            state.status = "loading";
+        })
+        // .addCase(markHabitAsDone.fulfilled, (state, action) => {
+        //     state.status = "succeeded";
+        //     // Update the specific habit's days/lastDone if needed
+        //     const updatedHabit = state.habits.find(h => h._id === action.payload._id);
+        //     if (updatedHabit) {
+        //     updatedHabit.days = action.payload.days;
+        //     updatedHabit.lastDone = action.payload.lastDone;
+        //     }
+        // })
+        .addCase(markHabitAsDone.rejected, (state, action) => {
+            state.status = "failed";
+            state.error = action.payload as string;
+        });
   },
 });
 
 export default habitSlice.reducer;
-
-
-// import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-// import { fetchHabits } from "./habitAPI";
-
-// type Habit = {
-//     id:string;
-//     title: string;
-//     description: string;
-//     createdAt: string;
-//     days: number;
-//     lastDone: Date;
-//     lastUpdate: Date;
-//     startedAt: Date;
-// }
-
-// type HabitState = {
-//     habits: Habit[];
-//     status: Record<string, "idle" | "loading" | "success" | "failed">;
-//     error: Record<string, string | null>;
-// }
-
-// const initialState: HabitState = {
-//     habits: [],
-//     status: {},
-//     error: {}
-// }
-// export const fetchHabitsThunk = createAsyncThunk("habit/fetchHabits", async() => {
-//     return await fetchHabits();
-// });
-// export const markAsDoneThunk = createAsyncThunk("habit/marAsDone", async (habitId: string, {rejectWithValue}) => {
-//     const response = await fetch(`http://localhost:3002/habits/markasdone/${habitId}`, {
-//         method:"PATCH",
-//     });
-//     const responseJson = await response.json();
-//     if (!response.ok) {
-//         return rejectWithValue("Failed to mark habit as done");
-//     }else if (responseJson.message.toSring() === "Habit restarted") {
-//         return rejectWithValue(responseJson.message);
-//     }else {
-//         return responseJson.message;
-//     }
-// });
-// const habitSlice = createSlice({
-//     name: "habits",
-//     initialState,
-//     reducers: {
-//         addHabits: (state, action) => {
-//             state.habits = action.payload;
-//         },
-//         addHabit: (state, action) => {
-//             state.habits.push(action.payload);
-//         },
-//         removeHabit: (state, action) => {
-//             state.habits = state.habits.filter(habit => habit.id !== action.payload);
-//         }
-//     },
-//     extraReducers: (builder) => {
-//         builder.addCase(fetchHabitsThunk.fulfilled, (state, action) => {
-//             state.habits = action.payload;
-//         }).addCase(markAsDoneThunk.fulfilled, (state,action) => {
-//             state.status[action.meta.arg] = "success";
-//             state.error[action.meta.arg] = null;
-//         }).addCase(markAsDoneThunk.rejected, (state,action) => {
-//             state.status[action.meta.arg] = "failed";
-//             state.error[action.meta.arg] = action.payload as string;
-//         });
-//     }
-// });
-
-// export const {addHabits, addHabit, removeHabit} = habitSlice.actions;
-// export default habitSlice.reducer;
