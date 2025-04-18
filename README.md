@@ -1,6 +1,6 @@
 Progreso se la semana 5
 
-La aplicación se encuentra práctivamente terminada, pues se puede: 
+La aplicación se encuentra prácticamente terminada, pues se puede: 
 
 - Registrar ususarios
 - Logear usuarios existentes
